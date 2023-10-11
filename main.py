@@ -68,7 +68,7 @@ if __name__ == "__main__":
         upload_contents += insert_text
 
     issue_title = f"청년안심주택 최신 공고 알림 ({today_date})"
-    repo = get_github_repo(access_token, upload_contents)
+    repo = get_github_repo(access_token, repo_name)
     upload_github_issue(repo, issue_title, upload_contents)
     print("Upload Github Issue Success!")
     
