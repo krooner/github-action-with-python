@@ -1,7 +1,8 @@
 import os
 from datetime import datetime
-import pytz
+
 from pytz import timezone
+import pytz
 # from crawling_url import parsing_beautifulsoup, extract_latest_data
 # from github_utils import get_github_repo, upload_github_issue
 
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     access_token = os.environ["MY_GITHUB_TOKEN"]
     repo_name = "github-action-with-python"
 
-    seoul_timezone = timezone('Asia/Seoul')
+    seoul_timezone = pytz.timezone('Asia/Seoul')
     today = datetime.now(seoul_timezone)
     today_date = today.strftime("%Y년 %m월 %d일")
 
