@@ -1,2 +1,2 @@
-pytz==2023.3.post1
+pytz==2019.1
 PyGithub==2.1.1
