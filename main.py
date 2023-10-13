@@ -2,17 +2,16 @@ import os
 from datetime import datetime
 from pytz import timezone
 
-# from crawling_url import parsing_beautifulsoup, extract_latest_data
 from github_utils import get_github_repo, upload_github_issue
 
-from selenium import webdriver # pip install selenium
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.chrome.service import Service
+from selenium import webdriver 
 from selenium.webdriver.common.by import By
-import chromedriver_autoinstaller # pip install chromedriver-autoinstaller
+import chromedriver_autoinstaller
 
+"""
+    Needed for using selenium in Virtual Machine
+"""
 from pyvirtualdisplay import Display
-
 display = Display(visible=0, size=(800, 800))
 display.start()
 
@@ -48,24 +47,38 @@ if __name__ == "__main__":
     column_list = text_list[0].split()
 
     # Table Markdown format
-    upload_contents = ""
-
+    markdown_table = ""
     column_text = "|" + "|".join(column_list) + "|\n"
     middle_text = "---".join(["|" for _ in range(column_text.count("|"))]) + "\n"
-    
-    upload_contents += column_text + middle_text
+    markdown_table += column_text + middle_text
+
+    link_address_list = [item.get_attribute("href") for item in elem.find_elements(By.TAG_NAME, 'a')]
+
+    contents_list = []
     
     for index in range(1, len(text_list), 3):
-        contents = text_list[index].split() + [text_list[index+1]]
+        link_address = link_address_list[index//3]
+        content = text_list[index].split() + [f"[{text_list[index+1]}]({link_address})"]
         
         post_date, apply_date, *management = text_list[index+2].split()
+
+        if post_date != today.strftime("%Y-%m-%d"): continue
+
         management = " ".join(management)
 
-        contents += [post_date, apply_date, management]
+        content += [post_date, apply_date, management]
 
-        insert_text = "|" + "|".join(contents) + "|\n"
+        insert_text = "|" + "|".join(content) + "|\n"
 
-        upload_contents += insert_text
+        contents_list.append(insert_text)
+
+    
+    if len(contents_list) == 0:
+        print("No Updated Post.")
+        exit()
+
+    markdown_table = markdown_table + "\n" + "".join(contents_list)
+    upload_contents = markdown_table
 
     issue_title = f"청년안심주택 최신 공고 알림 ({today_date})"
     repo = get_github_repo(access_token, repo_name)
